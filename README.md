@@ -10,7 +10,7 @@ package main
 
 import (
     "github.com/didip/tollbooth"
-    "github.com/didip/tollbooth/thirdparty/tollbooth_chi"
+    "github.com/didip/tollbooth_chi"
     "github.com/pressly/chi"
     "net/http"
     "time"
