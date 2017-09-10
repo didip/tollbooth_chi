@@ -2,14 +2,14 @@ package tollbooth_chi
 
 import (
 	"github.com/didip/tollbooth"
-	"github.com/didip/tollbooth/config"
+	"github.com/didip/tollbooth/limiter"
 	"net/http"
 )
 
-func LimitHandler(limiter *config.Limiter) func(http.Handler) http.Handler {
+func LimitHandler(lmt *limiter.Limiter) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		wrapper := &limiterWrapper{
-			limiter: limiter,
+			lmt: lmt,
 		}
 
 		wrapper.handler = handler
@@ -18,7 +18,7 @@ func LimitHandler(limiter *config.Limiter) func(http.Handler) http.Handler {
 }
 
 type limiterWrapper struct {
-	limiter *config.Limiter
+	lmt     *limiter.Limiter
 	handler http.Handler
 }
 
@@ -30,9 +30,9 @@ func (l *limiterWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 
 	default:
-		httpError := tollbooth.LimitByRequest(l.limiter, r)
+		httpError := tollbooth.LimitByRequest(l.lmt, r)
 		if httpError != nil {
-			w.Header().Add("Content-Type", l.limiter.MessageContentType)
+			w.Header().Add("Content-Type", l.lmt.GetMessageContentType())
 			w.WriteHeader(httpError.StatusCode)
 			w.Write([]byte(httpError.Message))
 			return
