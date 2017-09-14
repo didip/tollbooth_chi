@@ -30,7 +30,7 @@ func (l *limiterWrapper) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 
 	default:
-		httpError := tollbooth.LimitByRequest(l.lmt, r)
+		httpError := tollbooth.LimitByRequest(l.lmt, w, r)
 		if httpError != nil {
 			w.Header().Add("Content-Type", l.lmt.GetMessageContentType())
 			w.WriteHeader(httpError.StatusCode)
